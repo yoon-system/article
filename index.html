@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기사 프로젝트 노트</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --paper: #ffffff;
+    --ink: #2b2a28;
+    --sub: #6b675f;
+    --line: #e8e5df;
+    --accent: #7a5f38;
+    --accent-soft: #f3ede3;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 20px 96px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: .14em;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-size: 30px;
+    line-height: 1.3;
+    margin: 0 0 6px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--sub);
+    font-size: 15px;
+    margin-bottom: 36px;
+  }
+  .team span { flex: none; }
+
+  section { margin-bottom: 40px; }
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sub);
+    letter-spacing: .06em;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  textarea, input[type="text"] {
+    font: inherit;
+    color: inherit;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    width: calc(100% + 16px);
+    border-radius: 6px;
+    resize: none;
+    overflow: hidden;
+    outline: none;
+    transition: background .15s;
+  }
+  textarea:hover, input[type="text"]:hover { background: #f4f2ee; }
+  textarea:focus, input[type="text"]:focus { background: var(--accent-soft); }
+  ::placeholder { color: #8f8a80; }
+
+  .team input { margin: 0; width: auto; flex: 1; padding: 4px 8px; font-size: 15px; }
+
+  .brief textarea { font-size: 18px; line-height: 1.6; }
+
+  .topic-tag {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    margin-top: 4px;
+  }
+
+  .todo { display: flex; align-items: flex-start; gap: 10px; padding: 3px 0; }
+  .todo input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    flex: none;
+    width: 22px; height: 22px;
+    margin: 8px 0 0;
+    border: 1.5px solid #cfcac1;
+    border-radius: 6px;
+    background: var(--paper);
+    cursor: pointer;
+    position: relative;
+    transition: all .15s;
+  }
+  .todo input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+  .todo input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 6px; top: 2px;
+    width: 5px; height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .todo textarea { flex: 1; }
+  .todo.done textarea { color: #b3aea5; text-decoration: line-through; }
+
+  #logs { --dw: 68px; }
+  .log { position: relative; display: flex; padding: 4px 0 8px; }
+  .log::before {            /* 세로선 */
+    content: "";
+    position: absolute;
+    left: calc(var(--dw) - 1px);
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+  .log:first-child::before { top: 20px; }
+  .log:last-child::before { bottom: auto; height: 20px; }
+  .log:first-child:last-child::before { display: none; }
+  .log::after {             /* 점 */
+    content: "";
+    position: absolute;
+    left: calc(var(--dw) - 6px);
+    top: 15px;
+    width: 12px; height: 12px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid #c9c3b8;
+  }
+  .log.is-today::after { background: var(--accent); border-color: var(--accent); }
+  .date {
+    flex: none;
+    width: var(--dw);
+    padding: 7px 18px 0 0;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .date small { display: block; font-weight: 400; color: var(--sub); font-size: 12px; line-height: 1.3; }
+  .date .today { color: var(--accent); }
+  .log textarea { flex: 1; width: auto; margin: 0 -8px 0 12px; }
+
+  .add {
+    margin: 12px 0 0 calc(68px + 4px);
+    font: inherit;
+    font-size: 14px;
+    color: var(--sub);
+    background: none;
+    border: 1px dashed #d5d0c6;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .add:hover { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 480px) {
+    .page { padding: 32px 16px 72px; }
+    h1 { font-size: 26px; }
+    #logs { --dw: 60px; }
+    .date { padding-right: 14px; }
+    .add { margin-left: 64px; }
+  }
+  @media print { .add { display: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <p class="eyebrow">PROJECT NOTE</p>
+  <h1>기사 프로젝트 노트</h1>
+  <div style="margin-bottom:36px"></div>
+
+  <section class="brief">
+    <h2>프로젝트 한 줄</h2>
+    <textarea id="brief" rows="1" placeholder="브리프 한 줄" aria-label="프로젝트 한 줄"></textarea>
+  </section>
+
+  <section>
+    <h2>주제</h2>
+    <span class="topic-tag">경제</span>
+  </section>
+
+  <section>
+    <h2>할 일 체크리스트</h2>
+    <div id="todos"></div>
+  </section>
+
+  <section>
+    <h2>날짜별 기록</h2>
+    <div id="logs"></div>
+    <button class="add" id="addDay" type="button">+ 다음 날 추가</button>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var KEY = "article-project-note-v1";
+  var YEAR = 2026;
+  var START = "2026-11-18";
+  var DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
+  var state = { team: "", brief: "", todos: [], logs: {}, dates: [START] };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY));
+    if (saved) state = Object.assign(state, saved);
+  } catch (e) {}
+  while (state.todos.length < 5) state.todos.push({ text: "", done: false });
+  state.todos = state.todos.slice(0, 5);
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function grow(el) { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; }
+  function todayISO() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function parse(iso) { var a = iso.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); }
+  function toISO(d) {
+    var p = function (n) { return String(n).padStart(2, "0"); };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  // 팀 · 프로젝트 한 줄
+  var brief = document.getElementById("brief");
+  brief.value = state.brief;
+  brief.addEventListener("input", function () { state.brief = brief.value; grow(brief); save(); });
+
+  // 체크리스트
+  var todosEl = document.getElementById("todos");
+  state.todos.forEach(function (t, i) {
+    var row = document.createElement("div");
+    row.className = "todo" + (t.done ? " done" : "");
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = t.done;
+    cb.setAttribute("aria-label", "할 일 " + (i + 1) + " 완료");
+    var ta = document.createElement("textarea");
+    ta.rows = 1; ta.placeholder = "할 일 " + (i + 1); ta.value = t.text;
+    cb.addEventListener("change", function () {
+      t.done = cb.checked; row.classList.toggle("done", t.done); save();
+    });
+    ta.addEventListener("input", function () { t.text = ta.value; grow(ta); save(); });
+    row.appendChild(cb); row.appendChild(ta);
+    todosEl.appendChild(row);
+  });
+
+  // 날짜별 기록
+  var logsEl = document.getElementById("logs");
+  function addLogRow(iso) {
+    var d = parse(iso);
+    var row = document.createElement("div");
+    row.className = "log" + (iso === todayISO() ? " is-today" : "");
+    var date = document.createElement("div");
+    date.className = "date";
+    var isToday = iso === todayISO();
+    date.innerHTML = (d.getMonth() + 1) + "/" + d.getDate() +
+      "<small>" + DAYS[d.getDay()] + "요일" + (isToday ? ' · <span class="today">오늘</span>' : "") + "</small>";
+    var ta = document.createElement("textarea");
+    ta.rows = 1;
+    ta.placeholder = isToday ? "오늘 한 줄" : "한 줄";
+    ta.value = state.logs[iso] || "";
+    ta.addEventListener("input", function () { state.logs[iso] = ta.value; grow(ta); save(); });
+    row.appendChild(date); row.appendChild(ta);
+    logsEl.appendChild(row);
+  }
+  state.dates.forEach(addLogRow);
+
+  document.getElementById("addDay").addEventListener("click", function () {
+    var last = parse(state.dates[state.dates.length - 1]);
+    last.setDate(last.getDate() + 1);
+    var iso = toISO(last);
+    state.dates.push(iso);
+    addLogRow(iso); save();
+    logsEl.lastChild.querySelector("textarea").focus();
+  });
+
+  document.querySelectorAll("textarea").forEach(grow);
+  window.addEventListener("resize", function () { document.querySelectorAll("textarea").forEach(grow); });
+})();
+</script>
+</body>
+</html>
